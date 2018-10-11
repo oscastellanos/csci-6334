@@ -4,68 +4,47 @@ import scheduler
 from queue import Queue
 
 
-# To do: PCB data structure of a process
-
-# Process_id, Arrive_time, state,
-# PositionOfNextInstructionToExecute(PC Value)
-
 class PCB:
-    PositionOfNextInstructionToExecute = 0
-    state = "NEW"
+    # Process_id, Arrive_time, state,
+    # PositionOfNextInstructionToExecute(PC Value)
 
-
-    def __init__(self, process_id, arrive_time, state, PositionOfNextInstructionToExecute):
+    def __init__(self, process_id, arrive_time, priority, PositionOfNextInstructionToExecute):
         self.process_id = process_id
-        self.arrive_time = arrive_time
-        self.state = state
+        self.arrival_time = arrive_time
+        self.priority = priority
         self.PositionOfNextInstructionToExecute = PositionOfNextInstructionToExecute
-
-    def setState(self, state):
-        self.state = state
-
-    def newToReady(self):
-        self.state = "READY"
-
-    def readyToRunning(self):
-        self.state = "RUNNING"
-
-    def next_instruction(self):
-        self = self
-
-    #def processImage():
-    #    self = self
-
+        self.state = "NEW"
 
 class ProcessImage:
-    CPU_IOBurstSequence = ' '
-    def __init__(self, PCB):
-        self.PCB = PCB
-    #global code = CPU-I/O burst Sequence;
+    def __init__(self, process_id, arrive_time, priority, CPU_IOBURSTSequence):
+        self.CPU_IOBurstSequence = CPU_IOBURSTSequence
+        self.PCB = PCB(process_id, arrive_time, priority, CPU_IOBURSTSequence[0])
     # to do: other variables help you computing the latency, response, etc.
 
+    def setState(self, state):
+        self.PCB.state = state
 
+    def newToReady(self):
+        self.PCB.state = "READY"
 
-    def Process(self, PCB):
+    def readyToRunning(self):
+        self.PCB.state = "RUNNING"
+
+    def next_instruction(self, newPosition):
+        self.PCB.PositionOfNextInstructionToExecute = newPosition
+
+    def nextInstruction(self):
         self = self
-        # set PCB data, code and others
-        # set state as "NEW"
-
 
 
 class CPU:
-
-    BusyOrNot = False
     PC = 1 # Your CPU only has one register PC
-    timeslice = 0
-    PositionOfNextInstructionToExecute = 1
     mylist = [4, 5, 3, 2, 1, 4, 5, 6, 7, 8, 6, 5, 4, 3, 5, 6, 44, 5, 55, 433, 3]
 
 
     def __init__(self, timeslice):
         self.timeslice = timeslice
-        #self.BusyOrNot = BusyOrNot
-        #self.PC = PC
-        #self.PositionOfNextInstructionToExecute = PositionOfNextInstructionToExecute
+        self.BusyOrNot = False
 
 
     def isCPUbusy(self):
@@ -81,9 +60,25 @@ class CPU:
         self.BusyOrNot = True
 
     def execute(self, process):
+        self.setCPUBusy()
         for i in range(4):
             sorted(self.mylist)
 
+    '''
+    Read the CPU burst number (# from PositionOfNext...)
+    Repeat calling bubblesort for # of times and continue
+    
+    case: code runs out, return positionofnext, "terminated", 
+    then OS put it back to the terminated queue.
+    
+    case: if the slice of time (restricted number of calling bubblesort for a
+    process each time) runs out, return (PositionOf..+1, "ready"), then OS puts it back
+    to the ready queue.
+    
+    otherwise: return(PositionOfNext..+1, "wait")
+    (namely, P has an I/O request and then OS removes it from the ready queue
+    and sends it to the I/O queue
+    '''
 
 class IOdevice:
     # Public IOdevice(ArrayList<Process> Wait_Queue)
@@ -127,13 +122,13 @@ class OS:
             for row in processReader:
                 self.Processes.append([row[0], row[1], row[2], row[3]])
 
-
     def start_process(self):
         self = self
         counter = 0
         for pcbid in self.Processes:
             self.Processes[counter] = PCB(pcbid[0], pcbid[1], pcbid[2], pcbid[3])
-            self.New_Queue.put(self.Processes[counter])
+            processImage = ProcessImage(self.Processes[counter])
+            self.New_Queue.put(processImage)
             counter = counter + 1
 
     def ready(self):
@@ -151,9 +146,8 @@ class OS:
         if (not self.cpu.isCPUbusy()):
             process = self.Ready_Queue.get()
             process.readytoRunning()
-            self.cpu.setCPUBusy()
             self.cpu.execute(process)
-            self.cpu.setCPUIdle()
+            #self.cpu.setCPUIdle()
 
     def printReadyQueue(self):
         for process in list(self.Ready_Queue.queue):
