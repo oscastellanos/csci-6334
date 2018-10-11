@@ -8,6 +8,7 @@ class PCB:
     # Process_id, Arrive_time, state,
     # PositionOfNextInstructionToExecute(PC Value)
 
+
     def __init__(self, process_id, arrive_time, priority, PositionOfNextInstructionToExecute):
         self.process_id = process_id
         self.arrival_time = arrive_time
@@ -16,10 +17,21 @@ class PCB:
         self.state = "NEW"
 
 class ProcessImage:
-    def __init__(self, process_id, arrive_time, priority, CPU_IOBURSTSequence):
+    Process_ids = [[]]
+    CPU_IOBurstSequence = ""
+
+    def __init__(self):
         self.CPU_IOBurstSequence = CPU_IOBURSTSequence
-        self.PCB = PCB(process_id, arrive_time, priority, CPU_IOBURSTSequence[0])
+        self.currentInstructionIndex = 0
+        self.nextInstructionIndex = self.currentInstructionIndex + 1
+        self.currentInstruction = CPU_IOBURSTSequence[self.currentInstructionIndex]
+        self.PCB = PCB(process_id, arrive_time, priority, self.CPU_IOBurstSequence[self.nextInstructionIndex])
+        self.numOfInstructions = len(CPU_IOBURSTSequence)
     # to do: other variables help you computing the latency, response, etc.
+
+
+    def Process(self, process_id, arrive_time, priority, CPU_IOBURSTSequence):
+        self.Process_ids.append([process_id, PCB(process_id, arrive_time, priority, )])
 
     def setState(self, state):
         self.PCB.state = state
@@ -30,11 +42,14 @@ class ProcessImage:
     def readyToRunning(self):
         self.PCB.state = "RUNNING"
 
-    def next_instruction(self, newPosition):
-        self.PCB.PositionOfNextInstructionToExecute = newPosition
+    def next_instruction(self):
+        if ( self.nextInstructionIndex < self.numOfInstructions):
+            self.PCB.PositionOfNextInstructionToExecute = self.CPU_IOBurstSequence[self.nextInstructionIndex]
 
-    def nextInstruction(self):
-        self = self
+        else:
+            return "terminated"
+
+
 
 
 class CPU:
@@ -61,8 +76,10 @@ class CPU:
 
     def execute(self, process):
         self.setCPUBusy()
-        for i in range(4):
+        for i in range(process.currentInstruction):
             sorted(self.mylist)
+
+
 
     '''
     Read the CPU burst number (# from PositionOfNext...)
@@ -110,27 +127,28 @@ class OS:
     Ready_Queue = Queue()
     Wait_Queue = Queue()
     Terminated_Queue = Queue()
+    ProcessTable = ProcessImage()
     cpu = CPU(10)
 
-    Processes = []
+    #Processes = []
 
     # Read the txt input file, for each line, create a process and record its arrival time
     # Put each process in New_Queue initially, then put them in Ready_Queue
-    def read_input(self):
+    def begin(self):
         with open('/home/osvaldo/Desktop/input_file.txt', 'r') as csvfile:
             processReader = csv.reader(csvfile)
             for row in processReader:
-                self.Processes.append([row[0], row[1], row[2], row[3]])
+                processImage = ProcessImage(int(row[0]), int(row[1]), int(row[2]), row[3])
+                self.New_Queue.put(processImage)
 
-    def start_process(self):
-        self = self
+    '''def start_process(self):
         counter = 0
         for pcbid in self.Processes:
-            self.Processes[counter] = PCB(pcbid[0], pcbid[1], pcbid[2], pcbid[3])
+            self.Processes[counter] = ProcessImage(pcbid[0], pcbid[1], pcbid[2], pcbid[3])
             processImage = ProcessImage(self.Processes[counter])
             self.New_Queue.put(processImage)
             counter = counter + 1
-
+'''
     def ready(self):
         if (self.New_Queue.empty()):
             return -1
@@ -149,6 +167,7 @@ class OS:
             self.cpu.execute(process)
             #self.cpu.setCPUIdle()
 
+
     def printReadyQueue(self):
         for process in list(self.Ready_Queue.queue):
             print(process)
@@ -161,7 +180,7 @@ class OS:
 
 def test_OS():
     operating_system = OS()
-    operating_system.read_input()
+    operating_system.begin()
     operating_system.start_process()
     operating_system.ready()
     #operating_system.printReadyQueue()
