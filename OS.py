@@ -26,7 +26,7 @@ class OS:
 
 
     def ready(self):
-        if (self.New_Queue.empty()):
+        if self.New_Queue.empty():
             return -1
         else:
             gettingReady = self.New_Queue.get()
@@ -37,7 +37,7 @@ class OS:
     # Always check whether the CPU is idle or not; if yes, use your scheduler algorithm to select a
     # According to the return value of CPU execute(), put the process into the corresponding queue
     def run(self):
-        if (not self.cpu.isCPUbusy()):
+        if not self.cpu.isCPUbusy():
             process = self.Ready_Queue.get()
             process.set_running()
             self.cpu.execute(process)
