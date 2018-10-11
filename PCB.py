@@ -1,4 +1,4 @@
-
+import ProcessState
 
 class PCB:
     # Process_id, Arrive_time, state,
@@ -10,4 +10,4 @@ class PCB:
         self.arrival_time = arrive_time
         self.priority = priority
         self.PositionOfNextInstructionToExecute = PositionOfNextInstructionToExecute
-        self.state = "NEW"
+        self.state = ProcessState.new

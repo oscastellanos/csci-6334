@@ -1,12 +1,13 @@
 
 from collections import namedtuple
+import ProcessState
 
 ProcessStatistics = namedtuple('ProcessStatistics', ['latency', 'response_times'])
     
 class ProcessImage:
     def __init__(self, PCB):
         self._PCB = PCB
-        self.PCB = PCB(process_id, arrive_time, priority, 0)
+        #self.PCB = PCB(process_id, arrive_time, priority, 0)
         # to do: other variables help you computing the latency, response, etc.
         self._statistics = ProcessStatistics(None, tuple())
         
