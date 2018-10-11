@@ -4,8 +4,6 @@ from collections import namedtuple
 ProcessStatistics = namedtuple('ProcessStatistics', ['latency', 'response_times'])
     
 class ProcessImage:
-    CPU_IOBurstSequence = ""
-
     def __init__(self, PCB):
         self._PCB = PCB
         self.PCB = PCB(process_id, arrive_time, priority, 0)
@@ -19,11 +17,14 @@ class ProcessImage:
         else:
             return False
 
-    def newToReady(self):
+    def set_ready(self, time_slice):
         self.PCB.state = ProcessState.Ready
 
-    def readyToRunning(self):
+    def set_running(self, time_slice):
         self.PCB.state = ProcessState.Running
+        
+    def set_terminated(self, time_slice):
+        self.PCB.state = ProcessState.Terminated
 
     def next_instruction(self):
         return self._PCB.PositionOfNextInstructionToExecute

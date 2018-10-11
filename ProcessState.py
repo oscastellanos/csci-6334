@@ -5,4 +5,5 @@ class ProcessState(Enum):
     Ready = 0
     Running = 1
     Terminated = 2
-    Waiting = 3
+    New = 3
+    Waiting = 4
