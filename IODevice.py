@@ -1,5 +1,11 @@
 
-class IOdevice:
+from Utils import work
+
+
+class IODevice_thread(object):
+    
+
+class IOdevice(object):
     # Public IOdevice(ArrayList<Process> Wait_Queue)
 
     # public boolean BusyOrNot
@@ -10,14 +16,14 @@ class IOdevice:
 
 
     def bubbleSort(self):
-        self = self
+        work()
 
     # Always pick one process from the Wait_Queue to execute
 
     def execute(self, IO_Burst):
         # BusyOrNot = true
-        # call buble sort() for IO_Burst times and then return "ready"
-        for i in range(IO_Burst):
-            sorted()
+        # call bubble sort() for IO_Burst times and then return "ready"
+        for _ in range(IO_Burst):
+            work()
 
-        return("ready")
+        return "ready" 

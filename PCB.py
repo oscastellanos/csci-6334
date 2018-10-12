@@ -1,10 +1,10 @@
 
+from collections import namedtuple
+
+PCB = namedtuple('PCB', ['ID', 'arrival', 'priority', 'program_counter',
+                        'state'])
 
 class PCB:
-    # Process_id, Arrive_time, state,
-    # PositionOfNextInstructionToExecute(PC Value)
-
-
     def __init__(self, process_id, arrive_time, priority, PositionOfNextInstructionToExecute):
         self.process_id = process_id
         self.arrival_time = arrive_time
