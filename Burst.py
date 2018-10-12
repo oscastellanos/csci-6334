@@ -3,6 +3,7 @@ from collections import namedtuple
 from enum import Enum
 
 class BurstType(Enum):
+    '''Used by Burst class to denote different types of Burst.'''
     CPU = 0
     IO = 1
 

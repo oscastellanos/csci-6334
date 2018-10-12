@@ -1,8 +1,7 @@
 
 from Utils import work
 
-
-class IODevice_thread(object):
+from 
     
 
 class IOdevice(object):
