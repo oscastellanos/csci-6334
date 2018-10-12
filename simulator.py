@@ -23,8 +23,8 @@ class Simulator():
             processReader = csv.reader(csvfile)
             for row in processReader:
                 process = PCB(int(row[0]), int(row[1]), int(row[2]), row[3], ProcessState.New.name)
-                print(process.ID, process.arrival, process.priority, process.state)
-                self.New_Queue.put(PCB)
+                print(process.ID, process.arrival, process.priority, process.program_counter, process.state)
+                self.New_Queue.put(PCB.__name__)
 
 
 
@@ -33,7 +33,6 @@ class Simulator():
             return -1
         else:
             gettingReady = self.New_Queue.get()
-            #gettingReady.set_ready(1)
             self.Ready_Queue.put(gettingReady)
 
     # process from the Ready_Queue for CPU execution
@@ -49,7 +48,7 @@ class Simulator():
 
     def printReadyQueue(self):
         for process in list(self.Ready_Queue.queue):
-            print(process.ID, process.state)
+            print(process)
 
 
 
