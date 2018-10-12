@@ -1,7 +1,10 @@
 
-from Utils import work
+from Utils import work, threadedClass
 
-from 
+def task(queue, condition):
+    with condition:
+        condition.wait()
+        
     
 
 class IOdevice(object):
