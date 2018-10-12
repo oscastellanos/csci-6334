@@ -1,10 +1,9 @@
-
+from ProcessState import ProcessState
 from collections import namedtuple
 from itertools import accumulate
 
 PCB = namedtuple('PCB', ['ID', 'arrival', 'priority', 'program_counter',
                         'state'])
-import ProcessState
 
 ProcessStatistics = namedtuple('ProcessStatistics', ['latency', 'response_times'])
     
@@ -12,14 +11,16 @@ class ProcessImage:
     def __init__(self, process_id, arrive_time, priority, program):
         self._PCB = PCB(process_id, arrive_time, priority, 0, ProcessState.New)
         self._program = program
+        self._statistics = ProcessStatistics(None, tuple())
+        self._work_iterator = program
 
-    def __init__(self, PCB):
+    '''def __init__(self, PCB):
         self._PCB = PCB
         #self.PCB = PCB(process_id, arrive_time, priority, 0)
         # to do: other variables help you computing the latency, response, etc.
         self._statistics = ProcessStatistics(None, tuple())
         self._work_iterator = program
-
+'''
     def set_ready(self, time_slice):
         self._PCB = self._PCB._replace(state=ProcessState.Ready)
 

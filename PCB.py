@@ -1,7 +1,7 @@
 
 from collections import namedtuple
 
-import ProcessState
+from ProcessState import ProcessState
 
 
 PCB = namedtuple('PCB', ['ID', 'arrival', 'priority', 'program_counter',

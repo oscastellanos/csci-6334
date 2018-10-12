@@ -1,6 +1,6 @@
-import ProcessImage
-import ProcessState
-import CPU
+from ProcessImage import ProcessImage
+from ProcessState import ProcessState
+from CPU import CPU
 
 from queue import Queue
 import csv
@@ -11,7 +11,6 @@ class OS:
     Ready_Queue = Queue()
     Wait_Queue = Queue()
     Terminated_Queue = Queue()
-    cpu = CPU(10)
 
     #Processes = []
 
