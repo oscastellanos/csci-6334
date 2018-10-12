@@ -1,7 +1,7 @@
 
 
 from collections import deque
-from Utils import work, threadedClass
+from Utils import work, ThreadedClass
 
 def task(N):
     for _ in range(N):
