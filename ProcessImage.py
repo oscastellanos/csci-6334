@@ -31,4 +31,6 @@ class ProcessImage:
         self._PCB = self._PCB._replace(state=ProcessState.Terminated)
 
     def next_instruction(self):
-        return next(self._work_iterator)
+        burst = next(self._work_iterator)
+        self._PCB = self._PCB.set_next_instruction(burst)
+        return burst

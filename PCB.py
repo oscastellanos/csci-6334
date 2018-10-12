@@ -3,14 +3,20 @@ from collections import namedtuple
 
 from ProcessState import ProcessState
 
-
 PCB = namedtuple('PCB', ['ID', 'arrival', 'priority', 'program_counter',
                         'state'])
 
-class PCB:
-    def __init__(self, process_id, arrive_time, priority, PositionOfNextInstructionToExecute):
-        self.process_id = process_id
-        self.arrival_time = arrive_time
-        self.priority = priority
-        self.PositionOfNextInstructionToExecute = PositionOfNextInstructionToExecute
-        self.state = ProcessState.new
+class PCB(PCB):
+    __slots__ = ()
+    
+    def get_ID(self):
+        return ID
+        
+    def update_state(self, new_state):
+        return self._make(state=new_state)
+        
+    def set_next_instruction(self, next_instruction):
+        return self._make(program_counter=next_instruction)
+        
+    def get_next_instruction(self):
+        return self.program_counter

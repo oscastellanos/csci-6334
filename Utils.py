@@ -6,19 +6,28 @@ from concurrent.futures import ThreadPoolExecutor
 
 from Burst import Burst
 
-class threadedClass(ABC):
-    def __init__(self, number_of_threads):
+class ThreadedClass(ABC):
+    def __init__(self, number_of_threads=1):
         self.number_of_threads = number_of_threads
         self.pool = None
         
     def __enter__(self):
-        self.pool = ThreadPoolExecutor(self.number_of_threads)
+        self.open()
         
     def __exit__(self, *exc_details):
         self.pool.close()
         
+    def open(self):
+        if pool is None:
+            self.pool = ThreadPoolExecutor(self.number_of_threads)
+            
+    def close(self):
+        if pool is not None:
+            self.pool.close()
+    
     @abstractmethod
     def submit(self, fn, *data):
+        self.open()
         self.pool.submit(fn, *data)
 
 def interpret(code_sequence):
