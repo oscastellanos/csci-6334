@@ -2,9 +2,24 @@ import numpy as np
 
 from collections import namedtuple
 from abc import ABC, abstractmethod
+from concurrent.futures import ThreadPoolExecutor
 
 from Burst import Burst
 
+class threadedClass(ABC):
+    def __init__(self, number_of_threads):
+        self.number_of_threads = number_of_threads
+        self.pool = None
+        
+    def __enter__(self):
+        self.pool = ThreadPoolExecutor(self.number_of_threads)
+        
+    def __exit__(self, *exc_details):
+        self.pool.close()
+        
+    @abstractmethod
+    def submit(self, fn, *data):
+        self.pool.submit(fn, *data)
 
 def interpret(code_sequence):
     burst_types = itertools.cycle([BurstType.CPU, BurstType.IO])
