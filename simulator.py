@@ -22,7 +22,7 @@ class Simulator():
         with open('/home/osvaldo/Desktop/input_file.txt', 'r') as csvfile:
             processReader = csv.reader(csvfile)
             for row in processReader:
-                process = PCB(int(row[0]), int(row[1]), int(row[2]), row[3], ProcessState.New)
+                process = PCB(int(row[0]), int(row[1]), int(row[2]), row[3], ProcessState.New.name)
                 print(process.ID, process.arrival, process.priority, process.state)
                 self.New_Queue.put(PCB)
 
