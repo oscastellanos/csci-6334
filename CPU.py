@@ -1,20 +1,20 @@
+from collections import deque
+from Utils import work, ThreadedClass
 
-
-class CPU:
+class CPU(ThreadedClass):
     PC = 1 # Your CPU only has one register PC
-    mylist = [4, 5, 3, 2, 1, 4, 5, 6, 7, 8, 6, 5, 4, 3, 5, 6, 44, 5, 55, 433, 3]
 
 
     def __init__(self, timeslice):
         self.timeslice = timeslice
         self.BusyOrNot = False
+        self.current_task = None
+        super()
 
 
     def isCPUbusy(self):
         return self.BusyOrNot
 
-    def bubbleSort(self, mylist):
-        sorted(self.mylist)
 
     def setCPUIdle(self):
         self.BusyOrNot = False
@@ -26,6 +26,28 @@ class CPU:
         self.setCPUBusy()
         for i in range(process.currentInstruction):
             sorted(self.mylist)
+
+    def submit(self, pcb):
+        if self.current_task is None:
+            self.pcb = pcb
+            burst = pcb.get_next_instruction()
+            self.current_task = super().submit(task, burst.get_length())
+        else:
+            self.deque.append(pcb)
+
+    # Always pick one process from the Wait_Queue to execute
+
+    def check_interrupt(self):
+        if self.current_task is None:
+            return False
+        elif self.current_task.done():
+            finished_pcb = self.pcb
+            self.current_task = None
+            pcb = deque.popleft()
+            self.submit(pcb)
+            return finished_pcb
+        else:
+            return False
 
 
 

@@ -28,7 +28,7 @@ class Simulator():
 
 
 
-    def ready(self):
+    def put_in_ready_q(self):
         if self.New_Queue.empty():
             return -1
         else:
@@ -46,7 +46,7 @@ class Simulator():
             #self.cpu.setCPUIdle()
 
 
-    def printReadyQueue(self):
+    def print_ready_q(self):
         for process in list(self.Ready_Queue.queue):
             print(process)
 
@@ -55,8 +55,8 @@ class Simulator():
 if __name__ == '__main__':
     test = Simulator()
     test.begin()
-    test.ready()
-    test.printReadyQueue()
+    test.put_in_ready_q()
+    test.print_ready_q()
 
 
 
