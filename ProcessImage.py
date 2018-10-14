@@ -24,6 +24,10 @@ class ProcessImage:
     
     def get_ID(self):
         return self._PCB.ID
+        
+    @property
+    def priority(self):
+        return self._PCB.priority
     
     def set_ready(self):
         self._PCB = self._PCB._replace(state=ProcessState.Ready)

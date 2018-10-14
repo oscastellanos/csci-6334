@@ -12,13 +12,14 @@ from IODevice import IODevice
 from ProcessImage import ProcessImage
 from CPU import CPU
 
+from scheduler import RoundRobinQueue, PriorityQueue
 
 class OS:
 
     def __init__(self, file_name, time_slice):
         # isCPUAvailable = True
         self.New_Queue = Queue()
-        self.Ready_Queue = Queue()
+        self.Ready_Queue = PriorityQueue()#Queue()
         self.Wait_Queue = Queue()
         self.Terminated_Queue = Queue()
         self.file_name = file_name
@@ -41,7 +42,7 @@ class OS:
                 arrival = int(arrival)
                 priority = int(priority)
                 program = program.strip().strip(';')
-                print(ID, program)
+                print(ID, arrival, priority, program)
                 program = [int(i) for i in program]
                 program = interpret(program)
                 process = ProcessImage(ID, arrival, priority, program)

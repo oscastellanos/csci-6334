@@ -3,6 +3,8 @@ import heapq
 
 from collections import deque, namedtuple
 
+from queue import Queue, PriorityQueue
+
 
 def get_round_robin(queue):
     '''Get an element from a list using round robin.'''
@@ -46,29 +48,29 @@ def test_functions():
         put_priority_queue(pq_list, item, item)
     print_str = ', '.join([str(i) for i in print_str])
     print('Priority Queue Func: ', print_str)
- 
-class RoundRobinQueue(deque):
-    def __init__(self, maxlen=None):
-        super().__init__(maxlen=maxlen)
+    
+class RoundRobinQueue(Queue):
+    def __init__(self, maxsize=0):
+        super().__init__(maxsize=maxsize)
         
     def get(self):
-        return self.popleft()
+        return super().get()
         
     def put(self, item):
-        self.append(item)
+        super().put(item)
 
 QueueItem = namedtuple('QueueItem', ['priority', 'item'])
         
-class PriorityQueue(object):
-    def __init__(self):
-        self.queue = []
+class PriorityQueue(PriorityQueue):
+    def __init__(self, maxsize=0):
+        super().__init__(maxsize=maxsize)
         
-    def get(self):
-        priority, item = heapq.heappop(self.queue)
+    def get(self, *args):
+        priority, item = super().get(*args)
         return item
         
-    def put(self, item, priority):
-        heapq.heappush(self.queue, QueueItem(priority, item))
+    def put(self, item, *args):
+        super().put(QueueItem(item.priority, item), *args)
         
 def test_classes():
     rr_queue = RoundRobinQueue()

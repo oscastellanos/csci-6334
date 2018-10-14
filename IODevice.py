@@ -40,7 +40,7 @@ class IODevice(ThreadedClass):
             burst = pcb.get_next_instruction()
             self.current_task = super().submit(task, burst.get_length())
         else:
-            self.deque.append(pcb)
+            self.deque.put(pcb)
 
     # Always pick one process from the Wait_Queue to execute
 
