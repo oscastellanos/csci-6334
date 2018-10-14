@@ -19,7 +19,7 @@ class OS:
     def __init__(self, file_name, time_slice):
         # isCPUAvailable = True
         self.New_Queue = Queue()
-        self.Ready_Queue = PriorityQueue()#Queue()
+        self.Ready_Queue = RoundRobinQueue()#Queue()
         self.Wait_Queue = Queue()
         self.Terminated_Queue = Queue()
         self.file_name = file_name
@@ -80,8 +80,12 @@ class OS:
                 self.Wait_Queue.put(process)
         else:
             process.set_instruction_length(remaining_time)
-            self.current_process = process
-            self.cpu.setCPUBusy()
+            if isinstance(self.Ready_Queue, RoundRobinQueue):
+                self.current_process = None
+                self.Ready_Queue.put(process)
+            else:
+                self.current_process = process
+                self.cpu.setCPUBusy()
             
 
     def printReadyQueue(self):
