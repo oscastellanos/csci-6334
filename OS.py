@@ -64,22 +64,19 @@ class OS:
     def scheduler(self):
         if not self.cpu.isCPUbusy():
             process = self.Ready_Queue.get()
+            print('ID: ', process.get_ID())
         else:
             process = self.current_process
         process.set_running()
         remaining_time = self.cpu.execute(process)
-        print('remaining time: ', remaining_time)
         if remaining_time == 0:
             burst = process.next_instruction()
-            print('Burst: ', burst)
             if burst is None:
                 process.set_terminated()
                 self.Terminated_Queue.put(process)
             else:
                 process.set_waiting()
-                print(self.Wait_Queue.qsize())
                 self.Wait_Queue.put(process)
-                print(self.Wait_Queue.qsize())
         else:
             process.set_instruction_length(remaining_time)
             self.current_process = process

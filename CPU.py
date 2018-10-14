@@ -27,7 +27,6 @@ class CPU(ThreadedClass):
     def execute(self, process, step=2):
         self.setCPUBusy()
         burst = process.get_current_burst()
-        print(step, burst, process.get_ID())
         if step > burst.get_length():
             step = burst.get_length()
         for _ in range(step):
