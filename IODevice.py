@@ -3,13 +3,14 @@
 from collections import deque
 from Utils import work, ThreadedClass
 from queue import Empty
+from threading import main_thread
 
 def task(N):
     for _ in range(N):
         work()
         
 def handle_q(io_queue, ready_queue):
-    while True:
+    while main_thread().is_alive():
         try:
             process = io_queue.get(False, 0.5)
             burst = process.get_current_burst()
