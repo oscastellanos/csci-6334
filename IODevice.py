@@ -6,14 +6,28 @@ from Utils import work, ThreadedClass
 def task(N):
     for _ in range(N):
         work()
+        
+def handle_q(io_queue, ready_queue):
+    while True:
+        process = io_queue.get()
+        burst = process.get_current_burst()
+        for _ in range(burst.get_length()):
+            work()
+        process.set_ready()
+        ready_queue.put(process)
+        
 
 class IOdevice(ThreadedClass):
-    def __init__(self):
-        self.queue = deque()
+    def __init__(self, io_queue, ready_queue):
+        self.io_queue = io_queue
+        self.ready_queue = ready_queue
         self.current_task = None
         self.pcb = None
         super()
-        
+    
+    def start(self):
+        self.task = super().submit(handle_q, self.io_queue, self.ready_queue)
+    
     def submit(self, pcb):
         if self.current_task is None:
             self.pcb = pcb

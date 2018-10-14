@@ -10,14 +10,20 @@ import csv
 
 
 class OS:
-    # isCPUAvailable = True
-    New_Queue = Queue()
-    Ready_Queue = Queue()
-    Wait_Queue = Queue()
-    Terminated_Queue = Queue()
+
+    def __init__(self, file_name):
+        # isCPUAvailable = True
+        self.New_Queue = Queue()
+        self.Ready_Queue = Queue()
+        self.Wait_Queue = Queue()
+        self.Terminated_Queue = Queue()
+        self.file_name = file_name
+        
+        self.io = IODevice(self.Wait_Queue, self.Ready_Queue)
+        self.io.start()
 
     def boot(self):
-        with open('/home/osvaldo/Desktop/input_file.txt', 'r') as csvfile:
+        with open(self.file_name, 'r') as csvfile:
             processReader = csv.reader(csvfile)
 
             for row in processReader:
@@ -29,15 +35,13 @@ class OS:
                 process = ProcessImage(ID, arrival, priority, program)
                 self.New_Queue.put(process)
 
-
-
     def put_in_ready_queue(self):
         if self.New_Queue.empty():
             return -1
         else:
             while not self.New_Queue.empty():
                 gettingReady = self.New_Queue.get()
-                ready = gettingReady.update_state(ProcessState.Ready.name)
+                ready = gettingReady.set_ready()
                 self.Ready_Queue.put(ready)
 
     # process from the Ready_Queue for CPU execution
@@ -48,8 +52,18 @@ class OS:
         if not self.cpu.isCPUbusy():
             process = self.Ready_Queue.get()
             process.set_running()
-            self.cpu.execute(process)
-            # self.cpu.setCPUIdle()
+            remaining_time = self.cpu.execute(process)
+            if remaining_time == 0:
+                burst = process.next_instruction()
+                if burst is None:
+                    process.set_terminated()
+                    self.Terminated_Queue.put(process)
+                else:
+                    process.set_waiting()
+                    self.Wait_Queue.put(process)
+            else:
+                process.set_instruction_length(remaining_time)
+                process.set_ready()
 
     def printReadyQueue(self):
         for process in list(self.Ready_Queue.queue):

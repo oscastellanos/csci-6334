@@ -12,7 +12,7 @@ class ProcessImage:
         self._PCB = PCB(process_id, arrive_time, priority, 0, ProcessState.New)
         self._program = program
         self._statistics = ProcessStatistics(None, tuple())
-        self._work_iterator = program
+        self._program = program
 
     '''def __init__(self, PCB):
         self._PCB = PCB
@@ -29,12 +29,23 @@ class ProcessImage:
         
     def set_terminated(self, time_slice):
         self._PCB = self._PCB._replace(state=ProcessState.Terminated)
+        
+    def set_waiting(self, time_slice):
+        self._PCB = self._PCB._replace(state=ProcessState.Waiting)
 
     def next_instruction(self):
-        burst = next(self._work_iterator)
-        self.current_burst = burst
-        self._PCB = self._PCB.set_next_instruction(burst)
-        return burst
+        if self._PCB.program_counter >= len(self._program):
+            return None
+        else
+            next_count = self._PCB.program_counter
+            self._PCB = self._PCB._replace(program_counter=next_count)
+            burst = self.program[next_count]
+            self.current_burst = burst
+            self._PCB = self._PCB.set_next_instruction(burst)
+            return burst
+            
+    def set_instruction_length(self, length):
+        self.current_burst = self.current_burst._replace(length=length)
         
     def get_current_burst(self):
         return self.current_burst
