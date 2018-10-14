@@ -1,20 +1,19 @@
 from collections import deque
 from Utils import work, ThreadedClass
 
-class CPU(ThreadedClass):
-    PC = 1 # Your CPU only has one register PC
 
+class CPU(ThreadedClass):
+    PC = 1  # Your CPU only has one register PC
 
     def __init__(self, timeslice):
         self.timeslice = timeslice
         self.BusyOrNot = False
         self.current_task = None
+        self.cycle = 0
         super()
-
 
     def isCPUbusy(self):
         return self.BusyOrNot
-
 
     def setCPUIdle(self):
         self.BusyOrNot = False
@@ -22,10 +21,8 @@ class CPU(ThreadedClass):
     def setCPUBusy(self):
         self.BusyOrNot = True
 
-    def execute(self, process):
-        self.setCPUBusy()
-        for i in range(process.currentInstruction):
-            sorted(self.mylist)
+    def start(self, os):
+        os.boot()
 
     def submit(self, pcb):
         if self.current_task is None:
@@ -49,19 +46,17 @@ class CPU(ThreadedClass):
         else:
             return False
 
-
-
     '''
     Read the CPU burst number (# from PositionOfNext...)
     Repeat calling bubblesort for # of times and continue
-    
+
     case: code runs out, return positionofnext, "terminated", 
     then OS put it back to the terminated queue.
-    
+
     case: if the slice of time (restricted number of calling bubblesort for a
     process each time) runs out, return (PositionOf..+1, "ready"), then OS puts it back
     to the ready queue.
-    
+
     otherwise: return(PositionOfNext..+1, "wait")
     (namely, P has an I/O request and then OS removes it from the ready queue
     and sends it to the I/O queue
