@@ -23,6 +23,14 @@ class CPU(ThreadedClass):
 
     def start(self, os):
         os.boot()
+        
+    def execute(self, process, step=2):
+        burst = process.get_current_burst()
+        if step > burst.get_length():
+            step = burst.get_length()
+        for _ in range(step):
+            work()
+        return burst.get_length() - step
 
     def submit(self, pcb):
         if self.current_task is None:

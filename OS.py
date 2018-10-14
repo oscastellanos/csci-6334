@@ -3,6 +3,8 @@ from ProcessState import ProcessState
 from PCB import PCB
 from CPU import CPU
 
+from Utils import interpret
+
 from queue import Queue
 import csv
 
@@ -19,8 +21,12 @@ class OS:
             processReader = csv.reader(csvfile)
 
             for row in processReader:
-                process = PCB(int(row[0]), int(row[1]), int(row[2]), row[3], ProcessState.New.name)
-                #print(process.ID, process.arrival, process.priority, process.program_counter, process.state)
+                ID, arrival, priority, program = row
+                ID = int(ID)
+                arrival = int(arrival)
+                priority = int(priority)
+                program = interpret(program)
+                process = ProcessImage(ID, arrival, priority, program)
                 self.New_Queue.put(process)
 
 

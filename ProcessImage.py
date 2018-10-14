@@ -32,5 +32,9 @@ class ProcessImage:
 
     def next_instruction(self):
         burst = next(self._work_iterator)
+        self.current_burst = burst
         self._PCB = self._PCB.set_next_instruction(burst)
         return burst
+        
+    def get_current_burst(self):
+        return self.current_burst
