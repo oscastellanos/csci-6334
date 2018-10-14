@@ -6,39 +6,37 @@ from CPU import CPU
 from queue import Queue
 import csv
 
-PCB = namedtuple('PCB', ['ID', 'arrival', 'priority', 'program_counter',
-                         'state'])
+from OS import OS
 
 
 class Simulator():
-    cpu = CPU(3)
-    os = OS()
-
-    New_Queue = Queue()
-    Ready_Queue = Queue()
-    Wait_Queue = Queue()
-    Terminated_Queue = Queue()
-
-    def __init__(self):
-        self = self
+    def __init__(self, file_name, time_slice):
+        self.os = OS(file_name, time_slice)
 
     def run(self):
-        self.cpu.start(self.os)
-        self.cpu.setCPUBusy()
+        self.os.boot()
+        while self.os.is_finished() is False:
+            self.os.scheduler()
 
 
 
 if __name__ == '__main__':
-    sim = Simulator()
-    #    -> cpu.start -> sim.os.boot()
-    sim.run()
-    sim.os.print_queue("New")
-    sim.os.put_in_ready_queue()
-    sim.os.print_queue("Ready")
-    #sim.os.scheduler()
-    #sim.cpu.check_interrupt()
-    #sim.os.print_queue("New")
-    #while not sim.os.Ready_Queue.empty():
+    try:
+        sim = Simulator('input_file.txt', 2)
+        #    -> cpu.start -> sim.os.boot()
+        print('Start')
+        sim.run()
+        print('End')
+        sim.os.print_queue("New")
+        sim.os.put_in_ready_queue()
+        sim.os.print_queue("Ready")
+        #sim.os.scheduler()
+        #sim.cpu.check_interrupt()
+        #sim.os.print_queue("New")
+        #while not sim.os.Ready_Queue.empty():
+    except KeyboardInterrupt:
+        sim.close()
+        exit()
 
 
 

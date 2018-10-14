@@ -5,7 +5,7 @@ from Utils import work, ThreadedClass
 class CPU(ThreadedClass):
     PC = 1  # Your CPU only has one register PC
 
-    def __init__(self, timeslice):
+    def __init__(self, timeslice=3):
         self.timeslice = timeslice
         self.BusyOrNot = False
         self.current_task = None
@@ -25,11 +25,14 @@ class CPU(ThreadedClass):
         os.boot()
         
     def execute(self, process, step=2):
+        self.setCPUBusy()
         burst = process.get_current_burst()
+        print(step, burst, process.get_ID())
         if step > burst.get_length():
             step = burst.get_length()
         for _ in range(step):
             work()
+        self.setCPUIdle()
         return burst.get_length() - step
 
     def submit(self, pcb):

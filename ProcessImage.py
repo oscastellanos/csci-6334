@@ -2,8 +2,7 @@ from ProcessState import ProcessState
 from collections import namedtuple
 from itertools import accumulate
 
-PCB = namedtuple('PCB', ['ID', 'arrival', 'priority', 'program_counter',
-                        'state'])
+from PCB import PCB
 
 ProcessStatistics = namedtuple('ProcessStatistics', ['latency', 'response_times'])
     
@@ -13,6 +12,7 @@ class ProcessImage:
         self._program = program
         self._statistics = ProcessStatistics(None, tuple())
         self._program = program
+        self.current_burst = self._program[0]
 
     '''def __init__(self, PCB):
         self._PCB = PCB
@@ -20,28 +20,32 @@ class ProcessImage:
         # to do: other variables help you computing the latency, response, etc.
         self._statistics = ProcessStatistics(None, tuple())
         self._work_iterator = program
-'''
-    def set_ready(self, time_slice):
+    '''
+    
+    def get_ID(self):
+        return self._PCB.ID
+    
+    def set_ready(self):
         self._PCB = self._PCB._replace(state=ProcessState.Ready)
 
-    def set_running(self, time_slice):
+    def set_running(self):
         self._PCB = self._PCB._replace(state=ProcessState.Running)
         
-    def set_terminated(self, time_slice):
+    def set_terminated(self):
         self._PCB = self._PCB._replace(state=ProcessState.Terminated)
         
-    def set_waiting(self, time_slice):
+    def set_waiting(self):
         self._PCB = self._PCB._replace(state=ProcessState.Waiting)
 
     def next_instruction(self):
-        if self._PCB.program_counter >= len(self._program):
+        if self._PCB.program_counter + 1 >= len(self._program):
             return None
-        else
-            next_count = self._PCB.program_counter
+        else:
+            next_count = self._PCB.program_counter + 1
             self._PCB = self._PCB._replace(program_counter=next_count)
-            burst = self.program[next_count]
+            burst = self._program[next_count]
             self.current_burst = burst
-            self._PCB = self._PCB.set_next_instruction(burst)
+            self._PCB = self._PCB.set_next_instruction(next_count)
             return burst
             
     def set_instruction_length(self, length):

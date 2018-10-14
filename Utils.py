@@ -1,10 +1,13 @@
 import numpy as np
 
 from collections import namedtuple
+
+import itertools
+
 from abc import ABC, abstractmethod
 from concurrent.futures import ThreadPoolExecutor
 
-from Burst import Burst
+from Burst import Burst, BurstType
 
 class ThreadedClass(ABC):
     def __init__(self, number_of_threads=1):
@@ -18,11 +21,11 @@ class ThreadedClass(ABC):
         self.pool.close()
         
     def open(self):
-        if pool is None:
+        if self.pool is None:
             self.pool = ThreadPoolExecutor(self.number_of_threads)
             
     def close(self):
-        if pool is not None:
+        if self.pool is not None:
             self.pool.close()
     
     @abstractmethod

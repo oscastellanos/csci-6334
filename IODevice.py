@@ -2,6 +2,7 @@
 
 from collections import deque
 from Utils import work, ThreadedClass
+from queue import Empty
 
 def task(N):
     for _ in range(N):
@@ -9,21 +10,25 @@ def task(N):
         
 def handle_q(io_queue, ready_queue):
     while True:
-        process = io_queue.get()
-        burst = process.get_current_burst()
-        for _ in range(burst.get_length()):
-            work()
-        process.set_ready()
-        ready_queue.put(process)
+        try:
+            process = io_queue.get(False, 0.5)
+            burst = process.get_current_burst()
+            for _ in range(burst.get_length()):
+                work()
+            process.set_ready()
+            process.next_instruction()
+            ready_queue.put(process)
+        except Empty:
+            pass
         
 
-class IOdevice(ThreadedClass):
+class IODevice(ThreadedClass):
     def __init__(self, io_queue, ready_queue):
         self.io_queue = io_queue
         self.ready_queue = ready_queue
         self.current_task = None
         self.pcb = None
-        super()
+        super().__init__()
     
     def start(self):
         self.task = super().submit(handle_q, self.io_queue, self.ready_queue)

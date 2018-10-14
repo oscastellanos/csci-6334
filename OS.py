@@ -8,10 +8,14 @@ from Utils import interpret
 from queue import Queue
 import csv
 
+from IODevice import IODevice
+from ProcessImage import ProcessImage
+from CPU import CPU
+
 
 class OS:
 
-    def __init__(self, file_name):
+    def __init__(self, file_name, time_slice):
         # isCPUAvailable = True
         self.New_Queue = Queue()
         self.Ready_Queue = Queue()
@@ -21,6 +25,11 @@ class OS:
         
         self.io = IODevice(self.Wait_Queue, self.Ready_Queue)
         self.io.start()
+        
+        self.cpu = CPU(time_slice)
+        
+    def is_finished(self):
+        return self.New_Queue.empty() and self.Ready_Queue.empty() and self.Wait_Queue.empty()
 
     def boot(self):
         with open(self.file_name, 'r') as csvfile:
@@ -31,9 +40,13 @@ class OS:
                 ID = int(ID)
                 arrival = int(arrival)
                 priority = int(priority)
+                program = program.strip().strip(';')
+                print(ID, program)
+                program = [int(i) for i in program]
                 program = interpret(program)
                 process = ProcessImage(ID, arrival, priority, program)
                 self.New_Queue.put(process)
+        self.put_in_ready_queue()
 
     def put_in_ready_queue(self):
         if self.New_Queue.empty():
@@ -41,8 +54,8 @@ class OS:
         else:
             while not self.New_Queue.empty():
                 gettingReady = self.New_Queue.get()
-                ready = gettingReady.set_ready()
-                self.Ready_Queue.put(ready)
+                gettingReady.set_ready()
+                self.Ready_Queue.put(gettingReady)
 
     # process from the Ready_Queue for CPU execution
     # Always check whether the CPU is idle or not; if yes, use your scheduler algorithm to select a
@@ -51,19 +64,27 @@ class OS:
     def scheduler(self):
         if not self.cpu.isCPUbusy():
             process = self.Ready_Queue.get()
-            process.set_running()
-            remaining_time = self.cpu.execute(process)
-            if remaining_time == 0:
-                burst = process.next_instruction()
-                if burst is None:
-                    process.set_terminated()
-                    self.Terminated_Queue.put(process)
-                else:
-                    process.set_waiting()
-                    self.Wait_Queue.put(process)
+        else:
+            process = self.current_process
+        process.set_running()
+        remaining_time = self.cpu.execute(process)
+        print('remaining time: ', remaining_time)
+        if remaining_time == 0:
+            burst = process.next_instruction()
+            print('Burst: ', burst)
+            if burst is None:
+                process.set_terminated()
+                self.Terminated_Queue.put(process)
             else:
-                process.set_instruction_length(remaining_time)
-                process.set_ready()
+                process.set_waiting()
+                print(self.Wait_Queue.qsize())
+                self.Wait_Queue.put(process)
+                print(self.Wait_Queue.qsize())
+        else:
+            process.set_instruction_length(remaining_time)
+            self.current_process = process
+            self.cpu.setCPUBusy()
+            
 
     def printReadyQueue(self):
         for process in list(self.Ready_Queue.queue):
@@ -84,3 +105,5 @@ class OS:
                 print(process.ID, process.arrival, process.priority, process.program_counter, process.state)
 
     # Record the time of every operation for computing your latency and response
+    def close():
+        self.io.close()
