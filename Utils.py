@@ -47,10 +47,3 @@ def bubble_sort(A):
     C = np.empty(N)
     C[B] = A[range(N)]
     return C
-    
-def create_work_schedule(sequence):
-    for i, slice in enumerate(sequence):
-        if i%2 == 0:
-            yield (OSOps.CPU, slice)
-        else:
-            yield (OSOps.IO, slice)
