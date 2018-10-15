@@ -19,7 +19,7 @@ class OS:
     def __init__(self, file_name, time_slice):
         # isCPUAvailable = True
         self.New_Queue = Queue()
-        self.Ready_Queue = RoundRobinQueue()#Queue()
+        self.Ready_Queue = PriorityQueue()#Queue()
         self.Wait_Queue = Queue()
         self.Terminated_Queue = Queue()
         self.file_name = file_name

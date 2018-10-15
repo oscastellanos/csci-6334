@@ -70,7 +70,7 @@ class PriorityQueue(PriorityQueue):
         return item
         
     def put(self, item, *args):
-        super().put(QueueItem(item.priority, item), *args)
+        super().put(QueueItem(1/item.priority, item), *args)
         
 def test_classes():
     rr_queue = RoundRobinQueue()
