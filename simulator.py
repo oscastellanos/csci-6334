@@ -30,9 +30,15 @@ def compute_measurements(X):
     return avg, std, mini, maxi
         
 if __name__ == '__main__':
-    fcfs = create_OS_FCFS('input_file.txt', 2)
-    rr = create_OS_RR('input_file.txt', 2)
-    priority = create_OS_Priority('input_file.txt', 2)
+    import argparse
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument('file_name')
+    args = parser.parse_args()
+
+    fcfs = create_OS_FCFS(args.file_name, 2)
+    rr = create_OS_RR(args.file_name, 2)
+    priority = create_OS_Priority(args.file_name, 2)
     
     for os_object in [fcfs, rr, priority]:
         print('\nCurrent OS: ', os_object)
