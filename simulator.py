@@ -49,11 +49,11 @@ if __name__ == '__main__':
             print(proc.get_ID(), proc.get_latency(), proc.get_response_time())
             
         avg, std, mini, maxi = compute_measurements(latencies)
-        print('Latency (Avg, Std): {:2.3f} +- {:2.3f}'.format(avg, std))
-        print('Latency Min: {:2.3f} Max: {:2.3f}'.format(mini, maxi))
+        print('Latency (Avg, Std): {:2.3f} +- {:2.3f} secs'.format(avg, std))
+        print('Latency Min: {:2.3f} Max: {:2.3f} secs'.format(mini, maxi))
         avg, std, mini, maxi = compute_measurements(response_times)
-        print('Response Time (Avg, Std): {:2.3f} +- {:2.3f}'.format(avg, std))
-        print('Response Time Min: {:2.3f} Max: {:2.3f}'.format(mini, maxi))
+        print('Response Time (Avg, Std): {:2.3f} +- {:2.3f} secs'.format(avg, std))
+        print('Response Time Min: {:2.3f} Max: {:2.3f} secs'.format(mini, maxi))
         print('OS Throughput: ', throughput)
 
 
