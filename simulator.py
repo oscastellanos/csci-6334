@@ -17,6 +17,9 @@ class Simulator():
         self.os.boot()
         while self.os.is_finished() is False:
             self.os.scheduler()
+            
+    def close(self):
+        self.os.close()
 
 
 
@@ -27,13 +30,12 @@ if __name__ == '__main__':
         print('Start')
         sim.run()
         print('End')
-        sim.os.print_queue("New")
-        sim.os.put_in_ready_queue()
-        sim.os.print_queue("Ready")
-        #sim.os.scheduler()
-        #sim.cpu.check_interrupt()
-        #sim.os.print_queue("New")
-        #while not sim.os.Ready_Queue.empty():
+        Q = []
+        while not sim.os.Terminated_Queue.empty():
+            Q.append(sim.os.Terminated_Queue.get())
+        for proc in Q:
+            print(proc.get_ID(), proc.get_latency(), proc.get_response_time())
+        
     except KeyboardInterrupt:
         sim.close()
         exit()

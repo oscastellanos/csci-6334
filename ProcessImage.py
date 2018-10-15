@@ -1,8 +1,9 @@
-from ProcessState import ProcessState
+
 from collections import namedtuple
-from itertools import accumulate
+from time import time
 
 from PCB import PCB
+from ProcessState import ProcessState
 
 ProcessStatistics = namedtuple('ProcessStatistics', ['latency', 'response_times'])
     
@@ -13,14 +14,9 @@ class ProcessImage:
         self._statistics = ProcessStatistics(None, tuple())
         self._program = program
         self.current_burst = self._program[0]
-
-    '''def __init__(self, PCB):
-        self._PCB = PCB
-        #self.PCB = PCB(process_id, arrive_time, priority, 0)
-        # to do: other variables help you computing the latency, response, etc.
-        self._statistics = ProcessStatistics(None, tuple())
-        self._work_iterator = program
-    '''
+        self.creation_time = time()
+        self.latency = None
+        self.response_time = None
     
     def get_ID(self):
         return self._PCB.ID
@@ -30,6 +26,8 @@ class ProcessImage:
         return self._PCB.priority
     
     def set_ready(self):
+        if self._PCB.state == ProcessState.Waiting and self.response_time is None:
+            self.response_time = time() - self.creation_time
         self._PCB = self._PCB._replace(state=ProcessState.Ready)
 
     def set_running(self):
@@ -37,6 +35,7 @@ class ProcessImage:
         
     def set_terminated(self):
         self._PCB = self._PCB._replace(state=ProcessState.Terminated)
+        self.latency = time() - self.creation_time
         
     def set_waiting(self):
         self._PCB = self._PCB._replace(state=ProcessState.Waiting)
@@ -57,3 +56,9 @@ class ProcessImage:
         
     def get_current_burst(self):
         return self.current_burst
+        
+    def get_latency(self):
+        return self.latency
+        
+    def get_response_time(self):
+        return self.response_time

@@ -14,12 +14,11 @@ from CPU import CPU
 
 from scheduler import RoundRobinQueue, PriorityQueue
 
-class OS:
+class OS(object):
 
     def __init__(self, file_name, time_slice):
-        # isCPUAvailable = True
         self.New_Queue = Queue()
-        self.Ready_Queue = PriorityQueue()#Queue()
+        self.Ready_Queue = RoundRobinQueue()#Queue()
         self.Wait_Queue = Queue()
         self.Terminated_Queue = Queue()
         self.file_name = file_name
@@ -30,7 +29,7 @@ class OS:
         self.cpu = CPU(time_slice)
         
     def is_finished(self):
-        return self.New_Queue.empty() and self.Ready_Queue.empty() and self.Wait_Queue.empty()
+        return self.New_Queue.empty() and self.Ready_Queue.empty() and self.Wait_Queue.empty() and self.io.is_finished() and not self.cpu.isCPUbusy()
 
     def boot(self):
         with open(self.file_name, 'r') as csvfile:
@@ -65,7 +64,6 @@ class OS:
     def scheduler(self):
         if not self.cpu.isCPUbusy():
             process = self.Ready_Queue.get()
-            print('ID: ', process.get_ID())
         else:
             process = self.current_process
         process.set_running()
@@ -73,6 +71,7 @@ class OS:
         if remaining_time == 0:
             burst = process.next_instruction()
             if burst is None:
+                print('Process ', process.get_ID(), ' Terminated.')
                 process.set_terminated()
                 self.Terminated_Queue.put(process)
             else:
@@ -82,6 +81,7 @@ class OS:
             process.set_instruction_length(remaining_time)
             if isinstance(self.Ready_Queue, RoundRobinQueue):
                 self.current_process = None
+                process.set_ready()
                 self.Ready_Queue.put(process)
             else:
                 self.current_process = process
@@ -107,5 +107,6 @@ class OS:
                 print(process.ID, process.arrival, process.priority, process.program_counter, process.state)
 
     # Record the time of every operation for computing your latency and response
-    def close():
+    def close(self):
+        self.io.join()
         self.io.close()

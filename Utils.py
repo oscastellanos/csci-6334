@@ -26,7 +26,8 @@ class ThreadedClass(ABC):
             
     def close(self):
         if self.pool is not None:
-            self.pool.close()
+            #self.pool.shutdown()
+            pass
     
     @abstractmethod
     def submit(self, fn, *data):
