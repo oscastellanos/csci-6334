@@ -1,11 +1,4 @@
-from OS import OS
-from ProcessImage import ProcessImage
-from collections import namedtuple
-from ProcessState import ProcessState
-from CPU import CPU
 import numpy as np
-from queue import Queue
-import csv
 
 from OS import create_OS_FCFS, create_OS_RR, create_OS_Priority
 
