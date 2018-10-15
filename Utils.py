@@ -38,7 +38,7 @@ def interpret(code_sequence):
     burst_types = itertools.cycle([BurstType.CPU, BurstType.IO])
     return [Burst(l, bt) for l, bt in zip(code_sequence, burst_types)]
 
-def work(N=2**10):
+def work(N=2**11):
     A = np.random.choice(range(N), N, replace=False)
     bubble_sort(A)
 

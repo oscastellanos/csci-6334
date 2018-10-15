@@ -1,3 +1,6 @@
+from time import time
+from enum import Enum
+
 from ProcessImage import ProcessImage
 from ProcessState import ProcessState
 from PCB import PCB
@@ -14,24 +17,60 @@ from CPU import CPU
 
 from scheduler import RoundRobinQueue, PriorityQueue
 
+class SchedulerType(Enum):
+    FCFS = 0
+    RR = 1
+    Priority = 2
+
+def create_OS_FCFS(file_name, time_slice):
+    return OS(file_name, time_slice, SchedulerType.FCFS)
+    
+def create_OS_RR(file_name, time_slice):
+    return OS(file_name, time_slice, SchedulerType.RR)
+    
+def create_OS_Priority(file_name, time_slice):
+    return OS(file_name, time_slice, SchedulerType.Priority)
+
 class OS(object):
 
-    def __init__(self, file_name, time_slice):
+    def __init__(self, file_name, time_slice, scheduler_type):
         self.New_Queue = Queue()
-        self.Ready_Queue = RoundRobinQueue()#Queue()
+        self.scheduler_type = scheduler_type
+        if scheduler_type is SchedulerType.FCFS:
+            self.Ready_Queue = Queue()
+        elif scheduler_type is SchedulerType.RR:
+            self.Ready_Queue = RoundRobinQueue()
+        elif scheduler_type is SchedulerType.Priority:
+            self.Ready_Queue = PriorityQueue()
         self.Wait_Queue = Queue()
         self.Terminated_Queue = Queue()
         self.file_name = file_name
+        self.os_start = None
+        self.number_of_processes = 0
+        self.time_slice = time_slice
         
-        self.io = IODevice(self.Wait_Queue, self.Ready_Queue)
-        self.io.start()
+        self.io = None
+        self.cpu = None
         
-        self.cpu = CPU(time_slice)
+    def __str__(self):
+        if self.scheduler_type is SchedulerType.FCFS:
+            return 'Class OS with Scheduler: FCFS'
+        elif self.scheduler_type is SchedulerType.RR:
+            return 'Class OS with Scheduler: RR'
+        elif self.scheduler_type is SchedulerType.Priority:
+            return 'Class OS with Scheduler: Priority'
         
     def is_finished(self):
         return self.New_Queue.empty() and self.Ready_Queue.empty() and self.Wait_Queue.empty() and self.io.is_finished() and not self.cpu.isCPUbusy()
 
     def boot(self):
+        self.os_start = time()
+        self.number_of_processes = 0
+        
+        self.io = IODevice(self.Wait_Queue, self.Ready_Queue)
+        self.io.start()
+        
+        self.cpu = CPU(self.time_slice)
         with open(self.file_name, 'r') as csvfile:
             processReader = csv.reader(csvfile)
 
@@ -41,11 +80,11 @@ class OS(object):
                 arrival = int(arrival)
                 priority = int(priority)
                 program = program.strip().strip(';')
-                print(ID, arrival, priority, program)
                 program = [int(i) for i in program]
                 program = interpret(program)
                 process = ProcessImage(ID, arrival, priority, program)
                 self.New_Queue.put(process)
+                self.number_of_processes += 1
         self.put_in_ready_queue()
 
     def put_in_ready_queue(self):
@@ -71,7 +110,6 @@ class OS(object):
         if remaining_time == 0:
             burst = process.next_instruction()
             if burst is None:
-                print('Process ', process.get_ID(), ' Terminated.')
                 process.set_terminated()
                 self.Terminated_Queue.put(process)
             else:
@@ -110,3 +148,6 @@ class OS(object):
     def close(self):
         self.io.join()
         self.io.close()
+        
+    def get_throughput(self):
+        return self.number_of_processes/(time() - self.os_start)
